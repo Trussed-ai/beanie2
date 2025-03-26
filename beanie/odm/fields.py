@@ -623,7 +623,7 @@ class IndexModelField:
         return self.fields == other.fields and self.options == other.options
 
     def __repr__(self):
-        return f"IndexModelField({self.name}, {self.fields}, {self.options})"
+        return f"{self.__class__.__name__}({self.name}, {self.fields}, {self.options})"
 
     @staticmethod
     def list_difference(
@@ -648,9 +648,7 @@ class IndexModelField:
                 continue
 
             options = {k: v for k, v in details.items() if k != "key"}
-            index_model = IndexModelField(
-                IndexModel(fields, name=name, **options)
-            )
+            index_model = cls(IndexModel(fields, name=name, **options))
             result.append(index_model)
         return result
 
@@ -678,9 +676,9 @@ class IndexModelField:
     @classmethod
     def _validate(cls, v: Any) -> "IndexModelField":
         if isinstance(v, IndexModel):
-            return IndexModelField(v)
+            return cls(v)
         else:
-            return IndexModelField(IndexModel(v))
+            return cls(IndexModel(v))
 
     if IS_PYDANTIC_V2:
 
